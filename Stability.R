@@ -47,7 +47,7 @@ xDat <- xx
 nr_truevars <- length(bs[bs != 0])
 nr_datapoints <- dim(df)[1]
 nr_bootstraps <- 30
-nr_iterations <- 20
+nr_iterations <- 1
 fracs <- seq(1,0.1,length=nr_bootstraps)
 
 
@@ -118,5 +118,5 @@ plot(fracs,mus,
      main="Stability of LASSO",lty=3)
 lines(fracs,p1sd,col="green",lty=1)
 lines(fracs,m1sd,col="green",lty=1)
-
-
+legend('topright', c('mus','+/- 1 std dev'),
+       lty=c(3,1), col=c('black', 'green'), bty='n', cex=1.5)
