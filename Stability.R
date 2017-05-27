@@ -46,8 +46,8 @@ xDat <- xx
 # create the resampled data indeces
 nr_truevars <- length(bs[bs != 0])
 nr_datapoints <- dim(df)[1]
-nr_bootstraps <- 30
-nr_iterations <- 1
+nr_bootstraps <- 25
+nr_iterations <- 35
 fracs <- seq(1,0.1,length=nr_bootstraps)
 
 
@@ -61,10 +61,11 @@ pval_matrix[,,,1] <- fracs
 # Unit Test the loop
 iBootstrap <- 1
 iIteration <- 1
-frac <- 0.5
+frac <- 0.9
 nr_samples <- round( nr_datapoints * fracs[iBootstrap] )
-bootstrap <- sample( 1:nr_datapoints , size = nr_samples, replace = FALSE)
+bootstrap <- sample( 1:nr_datapoints , size = nr_samples, replace = TRUE)
 cv.gg<-cv.glmnet(x= xDat[bootstrap,], y=yDat[bootstrap])
+plot(cv.gg)
 ll <- lasso.proj(x=xDat[bootstrap,],y=yDat[bootstrap])
 
 beta_hats <- coef(cv.gg,s="lambda.min")[-1]
@@ -82,16 +83,16 @@ for (iIteration in (1:nr_iterations)) {
     
     # sample without replacement
     nr_samples <- round( nr_datapoints * fracs[iBootstrap] )
-    bootstrap <- sample( 1:nr_datapoints , size = nr_samples, replace = FALSE)
-    #cv.gg <- cv.glmnet(x= xDat[bootstrap,], y = yDat[bootstrap])
-    ll <- lasso.proj(x = xDat[bootstrap,],y = yDat[bootstrap])
+    bootstrap <- sample( 1:nr_datapoints , size = nr_samples, replace = TRUE)
+    cv.gg <- cv.glmnet(x= xDat[bootstrap,], y = yDat[bootstrap])
+    #ll <- lasso.proj(x = xDat[bootstrap,],y = yDat[bootstrap])
     
    
-    #beta_hats <- coef(cv.gg,s="lambda.min")[-1]
-    #min_err <- t(beta_hats - bs) %*% (beta_hats - bs)
+    beta_hats <- coef(cv.gg,s="lambda.min")[-1]
+    min_err <- t(beta_hats - bs) %*% (beta_hats - bs)
     
-    #oracle_errMATRIX[iBootstrap,iIteration,2] <- min_err
-    pval_matrix[,iBootstrap,iIteration,2] <- ll$pval[bs != 0]
+    oracle_errMATRIX[iBootstrap,iIteration,2] <- min_err
+    #pval_matrix[,iBootstrap,iIteration,2] <- ll$pval[bs != 0]
     
     
   }
